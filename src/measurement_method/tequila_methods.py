@@ -6,13 +6,17 @@ from measurement_method.measurement_method import MeasurementMethod
 
 
 class TequilaMethods(MeasurementMethod):
-    def __init__(self, method = "si"):
+    def __init__(self, method = "lf", options = None):
         super().__init__()
         self.method = method
+        if options is None:
+            options = {}
+        self.options = options
+        self.options["method"] = method
 
     def get_groups(self, H, options=None) -> Tuple[list, list]:
         Hbin = BinaryHamiltonian.init_from_qubit_hamiltonian(H)
-        groups, ratios = Hbin.commuting_groups(options={"method": self.method})
+        groups, ratios = Hbin.commuting_groups(options=self.options)
         if ratios[0] is not None:
             return groups, ratios
         for i in range(len(groups)):
