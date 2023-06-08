@@ -8,10 +8,10 @@ from measurement_method.wfn_utils import get_cov_dict
 def get_cover_probs(groups, ratios):
     joint_prob_dict = {}
     prob_dict = {}
-    for idx, part in enumerate(groups):
+    for idx_g, part in enumerate(groups):
         op: QubitHamiltonian
         opbin = part
-        part_prob = ratios[idx]
+        part_prob = ratios[idx_g]
         group_terms = opbin.binary_terms
         for idx1, term1 in enumerate(group_terms):
             pw1 = BinaryPauliString(term1.get_binary(), 1.0).binary_tuple()
@@ -28,7 +28,7 @@ def get_cover_probs(groups, ratios):
                     joint_prob_dict[r_pw_pair] = part_prob
                 else:
                     joint_prob_dict[pw_pair] += part_prob
-                    joint_prob_dict[r_pw_pair] = joint_prob_dict[pw_pair]
+                    joint_prob_dict[r_pw_pair] += part_prob
     return joint_prob_dict, prob_dict
 
 def get_coeff_dict(Hbin):
@@ -57,14 +57,16 @@ def calc_variance(Hbin, joint_prob_dict, prob_dict, coeff_dict, cov_dict):
             prob = joint_prob / prob_prod
             inc = coeff_prod * cov * prob
             var_coeff += inc
-
+    acc = 0
     for idx, term in enumerate(Hbin_terms[1:]):
         pw = BinaryPauliString(term.get_binary(), 1.0).binary_tuple()
-        coeff = Hbin_terms[idx].coeff
+        coeff = term.coeff
         pw_pair = (pw, pw)
         cov = cov_dict[pw_pair]
-        var_coeff += coeff ** 2 * cov / prob_dict.get(pw, 0.0)
-
+        prob = prob_dict.get(pw, 0.0)
+        acc += prob
+        coeff2 = coeff ** 2
+        var_coeff += coeff2 * cov / prob
     return var_coeff
 
 def get_variance_on_ground_state(H: QubitHamiltonian, measurement_method: MeasurementMethod):
