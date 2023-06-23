@@ -1,8 +1,8 @@
 from tequila import QubitHamiltonian
 from tequila.grouping.binary_rep import BinaryPauliString, BinaryHamiltonian
 
-from measurement_method.measurement_method import MeasurementMethod
-from measurement_method.wfn_utils import get_cov_dict
+from hamil_lib.measurement_method.measurement_method import MeasurementMethod
+from hamil_lib.evaluation.wfn_utils import get_cov_dict
 
 
 def get_cover_probs(groups, ratios):

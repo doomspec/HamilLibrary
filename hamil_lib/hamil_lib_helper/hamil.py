@@ -4,6 +4,7 @@ import openfermion
 from openfermion import SymbolicOperator, QubitOperator, FermionOperator
 from openfermion import count_qubits
 
+
 def make_hamil_record(op: SymbolicOperator, type, n_qubit, **kwargs):
     assert type in ["fermion", "qubit"]
     assert n_qubit > 0
@@ -15,9 +16,9 @@ def make_hamil_record(op: SymbolicOperator, type, n_qubit, **kwargs):
     for key, value in kwargs.items():
         assert key in ["basis"]
         res[key] = value
+    return res
 
-
-def read_hamil_record(file_path):
+def read_hamil_record(file_path) -> [SymbolicOperator, dict]:
     with open(file_path, "rb") as f:
         record = pickle.load(f)
     op = None
@@ -26,6 +27,8 @@ def read_hamil_record(file_path):
     elif record["type"] == "qubit":
         op = QubitOperator()
     op.terms = record["terms"]
+    record["name"] = os.path.basename(file_path).split(".")[0]
+    del record["terms"]
     return op, record
 
 
@@ -46,6 +49,7 @@ def save_qubit_hamil(op: QubitOperator, emitting_file):
     dir_path = os.path.dirname(file_path)
     with open(dir_path + '/output/' + file_name + '.hamil', 'wb') as f:
         pickle.dump(record, f)
+
 
 def make_fermionic_hamiltonian(mol) -> SymbolicOperator:
     of_molecule = mol.make_molecule()

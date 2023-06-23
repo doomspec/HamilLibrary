@@ -2,7 +2,7 @@ from typing import Tuple
 
 from tequila.grouping.binary_rep import BinaryHamiltonian
 
-from measurement_method.measurement_method import MeasurementMethod
+from hamil_lib.measurement_method.measurement_method import MeasurementMethod
 
 
 class TequilaMethods(MeasurementMethod):
