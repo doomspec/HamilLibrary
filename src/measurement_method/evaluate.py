@@ -41,7 +41,7 @@ def get_coeff_dict(Hbin):
         coeff_dict[pw] = Hbin_terms[idx].coeff
     return coeff_dict
 
-def calc_variance(Hbin, joint_prob_dict, prob_dict, coeff_dict, cov_dict):
+def calc_variance(Hbin, joint_prob_dict, prob_dict, cov_dict):
     var_coeff = 0.0
     Hbin_terms = Hbin.binary_terms[1:]
     seen_pairs = set()
@@ -54,7 +54,7 @@ def calc_variance(Hbin, joint_prob_dict, prob_dict, coeff_dict, cov_dict):
             assert (pw2, pw1) not in seen_pairs
             assert pw1 != pw2
             joint_prob = joint_prob_dict.get(pw_pair, 0.0)
-            coeff_prod = coeff_dict[pw1] * coeff_dict[pw2]
+            coeff_prod = term1.coeff * term2.coeff
             cov = cov_dict.get(pw_pair, 0.0)
             if cov == 0.0 or joint_prob == 0.0:
                 continue
@@ -82,8 +82,29 @@ def get_variance_on_ground_state(H: QubitHamiltonian, measurement_method: Measur
     groups, ratios = measurement_method.get_groups(H)
     joint_prob_dict, prob_dict = get_cover_probs(groups, ratios)
     cov_dict = get_cov_dict(Hbin)
-    coeff_dict = get_coeff_dict(Hbin)
-    variance = calc_variance(Hbin, joint_prob_dict, prob_dict, coeff_dict, cov_dict)
+    variance = calc_variance(Hbin, joint_prob_dict, prob_dict, cov_dict)
     return variance
 
+def calc_average_variance(Hbin,prob_dict):
+
+    Hbin_terms = Hbin.binary_terms[1:]
+    diagonal_var = 2**Hbin.n_qubit
+    diagonal_var = diagonal_var / (diagonal_var + 1)
+    var_coeff = 0.0
+    for idx, term in enumerate(Hbin_terms):
+        pw = BinaryPauliString(term.get_binary(), 1.0).binary_tuple()
+        coeff = term.coeff
+        prob = prob_dict.get(pw, 0.0)
+        coeff2 = coeff ** 2
+        var_coeff += coeff2 * diagonal_var / prob
+
+    return var_coeff
+
+def get_variance_on_average_state(H: QubitHamiltonian, measurement_method: MeasurementMethod):
+    Hbin = BinaryHamiltonian.init_from_qubit_hamiltonian(H)
+    assert max(Hbin.binary_terms[0].binary_tuple()) == 0.0
+    groups, ratios = measurement_method.get_groups(H)
+    joint_prob_dict, prob_dict = get_cover_probs(groups, ratios)
+    variance = calc_average_variance(Hbin, prob_dict)
+    return variance
 
