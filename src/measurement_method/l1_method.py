@@ -19,5 +19,4 @@ class L1Method(MeasurementMethod):
             ratios.append(abs(term.coeff))
         ratio_sum = sum(ratios)
         ratios = [ratio / ratio_sum for ratio in ratios]
-        assert abs(sum(ratios) - 1.0) < 1e-6
         return groups, ratios
