@@ -17,7 +17,7 @@ def evaluate_on_small_mols(method: MeasurementMethod, transformation, mol_iterat
     return vars
 
 if __name__ == '__main__':
-    from molecule.small_mols import iter_small_mols
+    from hamil_lib.molecule.small_mols import iter_small_mols
 
     evaluate_on_small_mols(L1Method(), bravyi_kitaev,
                            iter_small_mols)
