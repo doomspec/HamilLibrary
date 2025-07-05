@@ -9,7 +9,6 @@ def get_cover_probs(groups, ratios):
     joint_prob_dict = {}
     prob_dict = {}
     for idx_g, part in enumerate(groups):
-        op: QubitHamiltonian
         opbin = part
         part_prob = ratios[idx_g]
         group_terms = opbin.binary_terms
@@ -83,7 +82,8 @@ def get_variance_on_ground_state(H: QubitHamiltonian, measurement_method: Measur
     joint_prob_dict, prob_dict = get_cover_probs(groups, ratios)
     cov_dict = get_cov_dict(Hbin)
     variance = calc_variance(Hbin, joint_prob_dict, prob_dict, cov_dict)
-    return variance
+    assert abs(variance.imag) < 1e-6
+    return variance.real
 
 def calc_average_variance(Hbin,prob_dict):
 
@@ -106,5 +106,6 @@ def get_variance_on_average_state(H: QubitHamiltonian, measurement_method: Measu
     groups, ratios = measurement_method.get_groups(H)
     joint_prob_dict, prob_dict = get_cover_probs(groups, ratios)
     variance = calc_average_variance(Hbin, prob_dict)
-    return variance
+    assert variance.imag == 0.0
+    return variance.real
 

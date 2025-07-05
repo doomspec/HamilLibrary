@@ -1,5 +1,6 @@
 from typing import Tuple
 
+from tequila import QubitHamiltonian
 from tequila.grouping.binary_rep import BinaryHamiltonian
 
 from hamil_lib.measurement_method.measurement_method import MeasurementMethod
@@ -14,12 +15,14 @@ class TequilaMethods(MeasurementMethod):
         self.options = options
         self.options["method"] = method
 
-    def get_groups(self, H, options=None) -> Tuple[list, list]:
+    def get_groups(self, H: QubitHamiltonian, options=None) -> Tuple[list, list]:
         Hbin = BinaryHamiltonian.init_from_qubit_hamiltonian(H)
         groups, ratios = Hbin.commuting_groups(options=self.options)
         if ratios[0] is not None:
             return groups, ratios
+        groups_in_op = []
         for i in range(len(groups)):
+            groups_in_op.append(groups[i].to_qubit_hamiltonian())
             weight = 0.0
             for term in groups[i].binary_terms:
                 weight += abs(term.coeff)
@@ -27,4 +30,4 @@ class TequilaMethods(MeasurementMethod):
         ratio_sum = sum(ratios)
         ratios = [ratio / ratio_sum for ratio in ratios]
         assert abs(sum(ratios) - 1.0) < 1e-6
-        return groups, ratios
+        return groups_in_op, ratios

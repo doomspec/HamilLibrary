@@ -1,4 +1,4 @@
-from hamil_lib_helper import *
+from hamil_lib.hamil_lib_helper import *
 import tequila as tq
 
 basis_set = 'cc-pvdz'

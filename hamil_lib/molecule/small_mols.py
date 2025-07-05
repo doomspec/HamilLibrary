@@ -1,6 +1,6 @@
 import os
 
-from hamil_lib_helper.hamil import read_hamil_record
+from hamil_lib.hamil_lib_helper.hamil import read_hamil_record
 
 
 def iter_small_mols():
@@ -8,6 +8,8 @@ def iter_small_mols():
     _small_mols = [
         "H2_6-31g",
         "LiH_sto-3g",
+        "LiH_6-31g",
+        "H2O_6-31g",
     ]
     mol_folder_path = os.path.dirname(os.path.abspath(__file__))+"/output"
     for name in _small_mols:
